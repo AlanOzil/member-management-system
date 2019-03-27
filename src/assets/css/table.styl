@@ -1,0 +1,24 @@
+.el-table
+  th
+    .tooltip-container
+      position: relative
+      .tooltip
+        cursor: pointer
+        &:after
+          // flex(row, center, center)
+          content: ''//url('~@/assets/img/logo-icon.png')
+          display: inline-block
+          width: 15px
+          height: 15px
+          background-image: url('~@/assets/img/detail.png')
+          background-size: contain
+          background-repeat: no-repeat
+          position: absolute
+          top: 50%
+          transform: translateY(-50%)
+          margin-left: 2px
+  td
+    &.root-node
+      border-left: 2px solid #409EFF
+    &.child-node
+      border-left: 2px solid #D5EAFF
