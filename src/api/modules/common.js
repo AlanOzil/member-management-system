@@ -11,7 +11,7 @@ export function captcha (uuid) {
 // 登录
 export function login (params) {
   return request({
-    url: requestUrl('/sys/login'),
+    url: requestUrl('/user/login'),
     method: 'post',
     data: requestParam(params)
   })

@@ -24,7 +24,7 @@ export function info (id) {
 // 获取登陆用户
 export function loginUser () {
   return request({
-    url: requestUrl('/sso/userInfo'),
+    url: requestUrl('/user/userInfo'),
     method: 'get',
     params: requestParam({}, 'get')
   })

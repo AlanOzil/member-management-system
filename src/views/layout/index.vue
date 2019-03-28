@@ -90,6 +90,7 @@ export default {
     // 获取当前管理员信息
     getUserInfo() {
       API.user.loginUser().then(({ data }) => {
+        console.log(data)
         if (data.success) {
           console.log(data);
           // this.loading = false;
@@ -108,8 +109,7 @@ export default {
           let menuData = data.data.filter(item => item.code === 'chain')[0].menusInfo[0].menuInfo;
           this.ALL_MENU_LIST(menuData)
         } else if (typeof(data) === 'string') {
-          window.location.href =
-          `/ssoclient/login`
+          this.$router.push('/login')
         }
         else {
           this.ALL_MENU_LIST([]);
@@ -118,8 +118,9 @@ export default {
         let message = error.message
         let code = error.code
         if (!code && message.indexOf('Network') > -1) {
-          window.location.href =
-          `/ssoclient/login`
+          // window.location.href =
+          // `/ssoclient/login`
+          this.$router.push('/login')
         }
         this.$message.error('菜单获取失败，请重新登录！')
       });

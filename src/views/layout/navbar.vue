@@ -2,7 +2,7 @@
   <nav class="site-navbar" :class="navbarClasses">
       <div class="site-navbar__header">
           <h1 class="site-navbar__brand" @click="$router.push({ name: 'home'})">
-              <a class="site-navbar__brand-lg" href="javascript:;">鲁邦通供应链系统</a>
+              <a class="site-navbar__brand-lg" href="javascript:;">会员管理系统</a>
               <a class="site-navbar__brand-mini" href="javascript:;"></a>
           </h1>
       </div>

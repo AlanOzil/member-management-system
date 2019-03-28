@@ -3,7 +3,7 @@ module.exports = {
         host: 'localhost',
         user: 'root',
         password: 'root',
-        database: 'vue2_blog',
+        database: 'member_management_system',
         port: '3306'
     }
 }

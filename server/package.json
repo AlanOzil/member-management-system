@@ -1,5 +1,9 @@
 {
+  "script": {
+    "server": "nodemon index.js"
+  },
   "devDependencies": {
-    "mysql": "^2.16.0"
+    "mysql": "^2.16.0",
+    "nodemon": "^1.18.10"
   }
 }

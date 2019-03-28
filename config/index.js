@@ -14,19 +14,18 @@ module.exports = {
     // proxyTable: {},
     // 代理列表, 是否开启代理通过[./dev.env.js]配置
     proxyTable: devEnv.OPEN_PROXY === false ? {} : {
-      '/proxyApi': {
-        target: 'http://localhost:8091/',
-        // target: 'http://10.200.40.69:8091',
+      '/api': {
+        target: 'http://localhost:3000/',
         changeOrigin: true,
         pathRewrite: {
-          '^/proxyApi': '/'
+          '^/api': '/'
         }
       }
     },
 
     // Various Dev Server settings
     host: '0.0.0.0', // can be overwritten by process.env.HOST
-    port: 8081, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    port: 9188, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,
@@ -50,10 +49,10 @@ module.exports = {
 
   build: {
     // Template for index.html
-    index: path.resolve(__dirname, '../../../bingo-sys-chain/src/main/resources/dist/index.html'),
+    index: path.resolve(__dirname, '../dist/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../../../bingo-sys-chain/src/main/resources/dist'),
+    assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
     assetsPublicPath: './',
 

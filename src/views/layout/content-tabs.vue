@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     showPlanDetail(ret){
-      this.$router.push('/plan/requirement/planDetails')
+      this.$router.push('/base/home')
       this.detailInfo = ret
     },
     // tab内容容器显示高度

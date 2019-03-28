@@ -3,7 +3,7 @@
     <div class="site-content__wrapper">
         <div class="site-content">
             <div class="brand-info">
-                <h1 class="brand-info__text">Robustel</h1>
+                <h1 class="brand-info__text">会员管理系统</h1>
                 <p class="brand-info__intro"><b>愿景：</b> 让全球设备接入数字世界</p>
                 <p class="brand-info__intro"><b>使命：</b> 让连接更可靠,让设备更智能,让服务更真诚</p>
                 <p class="brand-info__intro"><b>价值观：</b> 以客户为中心,以质量为基石,以人才为根本</p>
@@ -12,23 +12,22 @@
             <div class="login-main">
                 <h3 class="login-title">登陆</h3>
                 <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()">
-                    <el-form-item prop="userName">
-                        <el-input v-model="dataForm.userName" placeholder="账号"></el-input>
+                    <el-form-item prop="tel">
+                        <el-input v-model="dataForm.tel" placeholder="手机号登录"></el-input>
                     </el-form-item>
                     <el-form-item prop="password">
                         <el-input v-model="dataForm.password" type="password" placeholder="密码"></el-input>
                     </el-form-item>
-                    <el-form-item prop="captcha">
+                    <!-- <el-form-item prop="captcha">
                         <el-row :gutter="20">
                             <el-col :span="14">
                                 <el-input v-model="dataForm.captcha" placeholder="验证码"></el-input>
                             </el-col>
                             <el-col :span="10" class="login-captcha">
                                 <img :src="captchaPath" @click="getCaptcha()" alt="">
-                                <!-- <el-input v-model="captchaPath" disabled></el-input> -->
                             </el-col>
                         </el-row>
-                    </el-form-item>
+                    </el-form-item> -->
                     <el-form-item>
                         <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">登陆</el-button>
                     </el-form-item>
@@ -48,14 +47,14 @@ export default {
   data() {
     return {
       dataForm: {
-        userName: "",
+        tel: "",
         password: "",
         uuid: "",
         captcha: ""
       },
       dataRule: {
-        userName: [
-          { required: true, message: "账号不能为空", trigger: "blur" }
+        tel: [
+          { required: true, message: "手机号不能为空", trigger: "blur" }
         ],
         password: [
           { required: true, message: "密码不能为空", trigger: "blur" }
@@ -76,22 +75,22 @@ export default {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
           var params = {
-            username: this.dataForm.userName,
-            password: this.dataForm.password,
-            uuid: this.dataForm.uuid,
-            captcha: this.dataForm.captcha
+            tel: this.dataForm.tel,
+            password: this.dataForm.password
+            // uuid: this.dataForm.uuid,
+            // captcha: this.dataForm.captcha
           };
-          // API.common.login(params).then(({data}) => {
-          //     if (data && data.code == 0) {
-          //         this.$cookie.set('token', data.token, {expires: `${data.expire || 0}s`});
-          //         this.$router.replace({ name: 'home' })
-          //     }
-          //     else {
-          //         this.getCaptcha()
-          //         this.$message.error(data.msg)
-          //     }
-          // })
-          this.$router.replace({ name: "home" });
+          API.common.login(params).then(({data}) => {
+              if (data && data.code == 0) {
+                  this.$cookie.set('token', data.data.token, {expires: `${data.expire || 0}s`})
+                  this.$router.replace('base/home');
+              }
+              else {
+                  this.getCaptcha()
+                  this.$message.error(data.msg)
+              }
+          })
+          this.$router.replace('base/home');
         }
       });
     },
@@ -190,5 +189,3 @@ export default {
   }
 }
 </style>
-
-
