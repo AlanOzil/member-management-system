@@ -39,6 +39,11 @@ let router = new Router({
       }
     }]
   }, {
+    path: '/',
+    redirect: {
+      name: 'dictionary'
+    }
+  }, {
     path: '*',
     redirect: {
       name: '404'

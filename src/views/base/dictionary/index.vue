@@ -8,22 +8,11 @@
         <el-button type="danger" size="mini" @click="handleTreeRemove">删除</el-button>
       </div>
       <div style="margin-top: 10px;">
-        <el-input
-          size="small"
-          placeholder="输入关键字进行过滤"
-          v-model="filterText">
+        <el-input size="small" placeholder="输入关键字进行过滤" v-model="filterText">
         </el-input>
       </div>
       <div style="border-top: 1px solid #ddd; margin-top:10px;">
-        <el-tree
-          :data="treeData"
-          :props="defaultProps"
-          accordion
-          node-key="id"
-          ref="tree"
-          :filter-node-method="filterNode"
-          highlight-current
-          @node-click="handleNodeClick">
+        <el-tree :data="treeData" :props="defaultProps" accordion node-key="id" ref="tree" :filter-node-method="filterNode" highlight-current @node-click="handleNodeClick">
         </el-tree>
       </div>
     </el-col>
@@ -38,24 +27,14 @@
         <!-- <el-button type="primary">导入</el-button>
         <el-button type="primary">导出</el-button> -->
       </div>
-      <el-table-pagination
-        :loading="loading"
-        ref="table"
-        :data="tableData"
-        @current-change="currentChange"
-        highlightCurrentRow
-        :columns="columns"
-        :page-sizes="[15, 30, 50]"
-        :total="total"
-        @handleSizeChange="handleSizeChange"
-        @handleCurrentChange="handleCurrentChange">
+      <el-table-pagination :loading="loading" ref="table" :data="tableData" @current-change="currentChange" highlightCurrentRow :columns="columns" :page-sizes="[15, 30, 50]" :total="total" @handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange">
         <!-- <el-table-column slot="prepend" type="selection" width="55"></el-table-column> -->
         <el-table-column slot="prepend" type="index" width="35"></el-table-column>
         <el-table-column slot="prepend" align="center" width="80" label="选择">
           <template slot-scope="props">
-              <span class="tran_box">
-                 <el-checkbox v-model="props.row.selected"></el-checkbox>
-              </span>
+            <span class="tran_box">
+              <el-checkbox v-model="props.row.selected"></el-checkbox>
+            </span>
           </template>
         </el-table-column>
       </el-table-pagination>
@@ -76,11 +55,11 @@
       <el-form-item label="描述">
         <el-input clearable v-model="temp.description" style="width: 80%;"></el-input>
       </el-form-item>
-      <el-form-item label="上级目录">
+      <!-- <el-form-item label="上级目录">
         <el-select clearable class="filter-item" v-model="temp.parentId" placeholder="请选择" style="width: 80%;">
           <el-option v-for="item in treeData" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button v-if="dialogStatus == 'create'" @click="createData" type="primary">确定</el-button>
@@ -117,13 +96,16 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import {
+  mapMutations
+} from "vuex";
 import API from "@/api";
 import ElTablePagination from "@/components/table-pagination";
 export default {
   name: "dictionary",
   data() {
     return {
+      loading: false,
       filterText: "", // 树过滤输入框输入文本
       rightPanel: false, // 右侧表格
       treeData: [], // 树形数据
@@ -152,10 +134,16 @@ export default {
       },
       rules: {
         // tree弹框表单验证
-        code: [
-          { required: true, message: "code is required", trigger: "blur" }
-        ],
-        name: [{ required: true, message: "name is required", trigger: "blur" }]
+        code: [{
+          required: true,
+          message: "code is required",
+          trigger: "blur"
+        }],
+        name: [{
+          required: true,
+          message: "name is required",
+          trigger: "blur"
+        }]
       },
       textMap: {
         // tree 添加/编辑
@@ -164,9 +152,21 @@ export default {
       },
       columns: [
         // { label: "编码", prop: "code", minWidth: 40 },
-        { label: "名称", prop: "text", minWidth: 140 },
-        { label: "描述", prop: "description", minWidth: 140 },
-        { label: "显示顺序", prop: "orderSort", minWidth: 140 }
+        {
+          label: "名称",
+          prop: "text",
+          minWidth: 140
+        },
+        {
+          label: "描述",
+          prop: "description",
+          minWidth: 140
+        },
+        {
+          label: "显示顺序",
+          prop: "orderSort",
+          minWidth: 140
+        }
       ],
       dictionaryName: "", // 字典名称，用于显示在表格上方
       tableDialogFormVisible: false, // 控制表格弹框显示
@@ -182,10 +182,16 @@ export default {
       },
       tableRules: {
         // 表格弹框表单验证
-        code: [
-          { required: true, message: "code is required", trigger: "blur" }
-        ],
-        name: [{ required: true, message: "name is required", trigger: "blur" }]
+        code: [{
+          required: true,
+          message: "code is required",
+          trigger: "blur"
+        }],
+        name: [{
+          required: true,
+          message: "name is required",
+          trigger: "blur"
+        }]
       }
     };
   },
@@ -209,12 +215,10 @@ export default {
     },
     // 字典树节点点击
     handleNodeClick(nodeData) {
-      if (nodeData.childDictionariesInfo.length == 0) {
-        this.rightPanel = true;
-        this.dicGpId = nodeData.id;
-        this.dictionaryName = nodeData.name;
-        this.loadTableData();
-      }
+      this.rightPanel = true;
+      this.dicGpId = nodeData.id;
+      this.dictionaryName = nodeData.name;
+      this.loadTableData();
     },
     handleSizeChange(val) {
       this.listQuery.pageSize = val;
@@ -226,7 +230,9 @@ export default {
     },
     // 加载左侧树形数据
     loadTreeData() {
-      API.dictionary.groupList('').then(({ data }) => {
+      API.dictionary.groupList('').then(({
+        data
+      }) => {
         if (data && data.success) {
           this.treeData = data.data;
         } else {
@@ -238,7 +244,9 @@ export default {
     loadTableData() {
       const formData = `currentPage=${this.listQuery.pageNum}&pageSize=${this.listQuery.pageSize}&dictionaryId=${this.dicGpId}`
       // const formData = Object.assign(this.listQuery, { id: this.dicGpId });
-      API.dictionary.dictionaryList(formData).then(({ data }) => {
+      API.dictionary.dictionaryList(formData).then(({
+        data
+      }) => {
         if (data && data.success) {
           // this.listLoading = false
           this.tableData = data.data.list.map((item) => {
@@ -246,8 +254,7 @@ export default {
             return item
           })
           this.total = data.data.total;
-        } else {
-        }
+        } else {}
       });
     },
     // 单选
@@ -292,7 +299,9 @@ export default {
         if (valid) {
           // const tempData = Object.assign({ appId: this.appId }, this.temp);
           delete this.temp.id
-          API.dictionary.group(this.temp).then(({ data }) => {
+          API.dictionary.group(this.temp).then(({
+            data
+          }) => {
             if (data && data.success) {
               this.dialogFormVisible = false;
               this.$notify({
@@ -327,7 +336,9 @@ export default {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
           // const tempData = Object.assign({ appId: this.appId }, this.temp);
-          API.dictionary.groupEdit(this.temp).then(({ data }) => {
+          API.dictionary.groupEdit(this.temp).then(({
+            data
+          }) => {
             if (data && data.success) {
               this.dialogFormVisible = false;
               this.$notify({
@@ -347,12 +358,14 @@ export default {
       const key = this.$refs.tree.getCurrentKey();
       if (key) {
         this.$confirm("是否确定删除该项数据", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          tyle: "warning"
-        })
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            tyle: "warning"
+          })
           .then(() => {
-            API.dictionary.groupRemove(key).then(({ data }) => {
+            API.dictionary.groupRemove(key).then(({
+              data
+            }) => {
               if (data && data.success) {
                 this.$notify({
                   title: "成功",
@@ -361,8 +374,7 @@ export default {
                   duration: 2000
                 });
                 this.loadTreeData();
-              } else {
-              }
+              } else {}
             });
           })
           .catch(() => {});
@@ -387,12 +399,15 @@ export default {
     createTableData() {
       this.$refs["tableDataForm"].validate(valid => {
         if (valid) {
-          const formData = Object.assign(
-            { dictionaryId: this.dicGpId },
+          const formData = Object.assign({
+              dictionaryId: this.dicGpId
+            },
             this.tableInfo
           );
           delete formData.id
-          API.dictionary.dictionaryAdd(formData).then(({ data }) => {
+          API.dictionary.dictionaryAdd(formData).then(({
+            data
+          }) => {
             if (data && data.success) {
               this.tableDialogFormVisible = false;
               this.$notify({
@@ -427,7 +442,9 @@ export default {
       this.$refs["tableDataForm"].validate(valid => {
         if (valid) {
           const formData = Object.assign({}, this.tableInfo);
-          API.dictionary.dictionaryEdit(formData).then(({ data }) => {
+          API.dictionary.dictionaryEdit(formData).then(({
+            data
+          }) => {
             if (data && data.success) {
               this.tableDialogFormVisible = false;
               this.$notify({
@@ -447,12 +464,14 @@ export default {
       if (this.selectionData.length != 0) {
         const key = this.selectionData.id;
         this.$confirm("是否确定删除该项数据", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          tyle: "warning"
-        })
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            tyle: "warning"
+          })
           .then(() => {
-            API.dictionary.dictionaryRemove(key).then(({ data }) => {
+            API.dictionary.dictionaryRemove(key).then(({
+              data
+            }) => {
               if (data && data.success) {
                 this.$notify({
                   title: "成功",
@@ -461,8 +480,7 @@ export default {
                   duration: 2000
                 });
                 this.loadTableData();
-              } else {
-              }
+              } else {}
             });
           })
           .catch(() => {});
@@ -476,6 +494,6 @@ export default {
 
 <style lang="scss">
 .el-tree-node__content {
-  height: 30px;
+    height: 30px;
 }
 </style>

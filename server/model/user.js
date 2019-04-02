@@ -10,7 +10,10 @@ let userLogin = {
   id: ''
 }
 
+let authMenu = []
+
 module.exports = {
   userToken,
-  userLogin
+  userLogin,
+  authMenu
 }

@@ -6,7 +6,7 @@ import isInteger from 'lodash/isInteger'
 // 获取导航菜单列表 / 权限
 export function nav () {
   return request({
-    url: requestUrl('/sso/getAuthMenu'),
+    url: requestUrl('/user/getAuthMenu'),
     method: 'get',
     params: requestParam({}, 'get')
   })

@@ -6,7 +6,7 @@
     <template slot="title">
       <!-- <i :class="['site-sidebar__menu-icon', menuNav.icon ? menuNav.icon : 'fa fa-circle-o']"></i> -->
       <i class="iconfont" :class="menuNav.icon ? `icon-${menuNav.icon}` : 'icon-jichuziliao'"></i>
-      <span>{{ generateTitle(menuNav.name) }}</span>
+      <span>{{ menuNav.name }}</span>
     </template>
     <sub-menu-nav
       v-for="item in menuNav.menuInfo"
@@ -22,7 +22,7 @@
     <!-- <i :class="['site-sidebar__menu-icon', menuNav.icon ? menuNav.icon : 'fa fa-circle-o']"></i> -->
     <!-- <icon-svg icon-class="check-circle"/> -->
     <i class="iconfont" :class="menuNav.icon ? `icon-${menuNav.icon}` : 'icon-space'"></i>
-    <span>{{ generateTitle(menuNav.name) }}</span>
+    <span>{{ menuNav.name }}</span>
   </el-menu-item>
 </template>
 
@@ -30,7 +30,7 @@
   // import SubMenuNav from '../sub-menu-nav'
   // import '@/iconfont/svg/check-circle.svg'
   import { getRouteNameByUrl } from '@/utils'
-  import { generateTitle } from '@/utils/i18n'
+  // import { generateTitle } from '@/utils/i18n'
   export default {
     name: 'sub-menu-nav',
     props: {
@@ -50,8 +50,7 @@
             menuId: obj.menuId
           }})
         }
-      },
-      generateTitle
+      }
     }
   }
 </script>

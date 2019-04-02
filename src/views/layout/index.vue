@@ -90,15 +90,13 @@ export default {
     // 获取当前管理员信息
     getUserInfo() {
       API.user.loginUser().then(({ data }) => {
-        console.log(data)
         if (data.success) {
-          console.log(data);
           // this.loading = false;
           // this.DELETE_CONTENT_TABS([]);
-          this.UPDATE_USER_ID({ id: data.data.userId });
-          this.UPDATE_USER_NAME({ name: data.data.ext.name });
+          this.UPDATE_USER_ID({ id: data.data.id });
+          this.UPDATE_USER_NAME({ name: data.data.name });
           //this.$cookie.set('token', data.data.ext.token, {expires: `${data.expire || 0}s`});
-          this.$cookie.set('token', data.data.ext.token);
+          this.$cookie.set('token', data.data.token);
         }
       });
     },
@@ -106,7 +104,7 @@ export default {
     getNavList() {
       return API.menu.nav().then(({ data }) => {
         if (data && data.success) {
-          let menuData = data.data.filter(item => item.code === 'chain')[0].menusInfo[0].menuInfo;
+          let menuData = data.data[0].menuInfo
           this.ALL_MENU_LIST(menuData)
         } else if (typeof(data) === 'string') {
           this.$router.push('/login')

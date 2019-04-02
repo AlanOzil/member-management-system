@@ -5,36 +5,21 @@ const mysql = require('mysql')
 const $sql = require('./sql/user')
 const nanoid = require('nanoid')
 const crypto = require('crypto')
+const redis = require('../redis')
 const {
-  handleSqlFunc
+  handleSqlFunc,
+  jsonWrite
 } = require('./common');
 let {
-  userToken,
-  userLogin
+  userLogin,
+  authMenu
 } = require('../model/user');
 
 //使用连接池链接数据库
 
 const pool = mysql.createPool(models.mysql)
 
-let jsonWrite = function(res, ret) {
-  if (typeof ret === 'undefined') {
-    res.json({
-      code: 1,
-      message: '操作失败',
-      success: false
-    });
-  } else {
-    res.json({
-      code: 0,
-      message: '',
-      success: true,
-      data: ret
-    })
-  }
-}
-
-let addTokenFunc = (sql, token, userId) => {
+let addTokenFunc = (res, sql, token, userId) => {
   pool.query(sql, [token, userId, new Date(), new Date(new Date().getTime() + 10 * 60 * 60 * 1000), true], (err, ret, fields) => {
     if (err) {
       throw err
@@ -46,19 +31,41 @@ let addTokenFunc = (sql, token, userId) => {
   })
 }
 
-router.all('*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-  res.header("X-Powered-By", ' 3.2.1');
-  res.header("Content-Type", "application/json;charset=utf-8");
-  next();
-})
+let getMenuFunc = (res, sql) => {
+  handleSqlFunc(sql, [], (err, ret, fields) => {
+    if (err) {
+      throw err
+    } else {
+      if (ret.length) {
+        let menuList = recursionMenu(ret, 'root')
+        jsonWrite(res, menuList)
+      }
+    }
+  })
+}
+
+let recursionMenu = (data, id) => {
+  data.forEach((el, i) => {
+    el.leaf = false
+    el.menuInfo = []
+  })
+  let parentList = data.filter((el) => {
+    return el.parentId === id
+  })
+  parentList.forEach((el) => {
+    let menuList = recursionMenu(data, el.menuId)
+    if (menuList.length) {
+      el.leaf = true
+      el.menuInfo = menuList
+    }
+  })
+  return parentList
+}
 
 router.use('/userInfo', (req, res) => {
   let sql = $sql.user.checkByToken
   let token = req.headers.token
-  if (token === 'null') {
+  if (token === 'null' || !token || token === 'undefined') {
     // res.statusCode = 401
     res.json({
       success: false,
@@ -70,8 +77,10 @@ router.use('/userInfo', (req, res) => {
       if (err) {
         throw err
       } else {
-        userToken = result
-        console.log(userToken)
+        if (result.length) {
+          redis.set(result[0].token, JSON.stringify(result[0]), 10 * 60 * 60 * 1000)
+        }
+        jsonWrite(res, result[0])
       }
     })
   }
@@ -96,7 +105,7 @@ router.use('/login', (req, res) => {
           throw err
         } else if (!ret.length) {
           // 若未登录，添加新的token
-          addTokenFunc(addToken, token, userLogin.id)
+          addTokenFunc(res, addToken, token, userLogin.id)
         } else if (ret[0].expiration_time > new Date()) {
           // 查询到token，且登录未过期未登录过
           jsonWrite(res, {
@@ -106,7 +115,7 @@ router.use('/login', (req, res) => {
           ret.forEach((el) => {
             handleSqlFunc(deleteToken, el.token)
           })
-          addTokenFunc(addToken, token, userLogin.id)
+          addTokenFunc(res, addToken, token, userLogin.id)
         }
       })
     } else if (result.length === 1) {
@@ -114,4 +123,11 @@ router.use('/login', (req, res) => {
     }
   })
 })
+
+router.use('/getAuthMenu', (req, res) => {
+  let getMenuById = $sql.menu.getMenuById
+  getMenuFunc(res, getMenuById)
+  // jsonWrite(res, menu)
+})
+
 module.exports = router
