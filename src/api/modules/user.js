@@ -38,19 +38,19 @@ export function updatePassword (params) {
   })
 }
 
-// 添加用户
-export function add (params) {
+// 添加或编辑用户
+export function save (params) {
   return request({
-    url: requestUrl('/sys/user/save'),
+    url: requestUrl('/user/save'),
     method: 'post',
     data: requestParam(params)
   })
 }
 
-// 修改用户
-export function update (params) {
+// 改变状态
+export function setStatus (params) {
   return request({
-    url: requestUrl('/sys/user/update'),
+    url: requestUrl('/user/setStatus'),
     method: 'post',
     data: requestParam(params)
   })
@@ -59,7 +59,7 @@ export function update (params) {
 // 删除用户
 export function del (params) {
   return request({
-    url: requestUrl('/sys/user/delete'),
+    url: requestUrl('/user/delete'),
     method: 'post',
     data: requestParam(params, 'post', false)
   })

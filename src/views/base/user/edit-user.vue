@@ -103,20 +103,14 @@ export default {
         if (status === 'create') {
           this.dataInfo.id = null;
         } else {
-          // API.typeOfQualification.getInfoById(transmitData.id).then((data) => {
-          //   if (data && data.success) {
-          //     this.dataInfo = data.data
-          //     this.dataInfo.positions = data.data.positions.split(',')
-          //   }
-          // })
+          this.dataInfo = transmitData
         }
       })
     },
     dataFormSubmit() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          this.dataInfo.positions = this.dataInfo.positions.join(',')
-          API.typeOfQualification.save(this.dataInfo).then(({
+          API.user.save(this.dataInfo).then(({
             data
           }) => {
             // if (data && data.success) {
