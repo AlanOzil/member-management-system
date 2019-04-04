@@ -6,9 +6,8 @@ import isInteger from 'lodash/isInteger'
 // 获取用户列表
 export function list (params) {
   return request({
-    url: requestUrl('/sys/user/list'),
-    method: 'get',
-    params: requestParam(params, 'get')
+    url: requestUrl(`/user/list?${params}`),
+    method: 'get'
   })
 }
 

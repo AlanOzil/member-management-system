@@ -122,4 +122,18 @@ router.use('/saveDictionaryItemInfo', (req, res) => {
     })
   }
 })
+
+// 获取字典项
+router.use('/list/group', (req, res) => {
+  let sql = $sql.dicItem.getItemsByCode
+  let params = req.query
+  handleSqlFunc(sql, [params.code], (err, ret, fields) => {
+    if (err) {
+      throw err
+    } else {
+      jsonWrite(res, ret)
+    }
+  })
+})
+
 module.exports = router

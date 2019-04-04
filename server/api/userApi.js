@@ -44,6 +44,7 @@ let getMenuFunc = (res, sql) => {
   })
 }
 
+// 对菜单进行递归处理
 let recursionMenu = (data, id) => {
   data.forEach((el, i) => {
     el.leaf = false
@@ -62,6 +63,7 @@ let recursionMenu = (data, id) => {
   return parentList
 }
 
+// 用户登录信息
 router.use('/userInfo', (req, res) => {
   let sql = $sql.user.checkByToken
   let token = req.headers.token
@@ -86,15 +88,16 @@ router.use('/userInfo', (req, res) => {
   }
 })
 
+// 登录
 router.use('/login', (req, res) => {
   let login = $sql.user.login
   let checkById = $sql.user.checkById
   let addToken = $sql.user.addToken
   let deleteToken = $sql.user.deleteToken
   let params = req.body
-  let password = crypto.createHash('md5').update(params.password).digest('hex')
+  // let password = crypto.createHash('md5').update(params.password).digest('hex')
   let token = nanoid()
-  pool.query(login, [params.tel, password], (err, result, fields) => {
+  pool.query(login, [params.tel, params.password], (err, result, fields) => {
     if (err) {
       throw err
     } else if (result.length === 1) {
@@ -118,15 +121,36 @@ router.use('/login', (req, res) => {
           addTokenFunc(res, addToken, token, userLogin.id)
         }
       })
-    } else if (result.length === 1) {
+    } else if (result.length > 1) {
       throw '用户账号重复'
+    } else if (result.length === 0){
+      res.json({
+        success: false,
+        message: '用户名或密码错误',
+        code: 1
+      })
     }
   })
 })
 
+// 获取菜单
 router.use('/getAuthMenu', (req, res) => {
   let getMenuById = $sql.menu.getMenuById
   getMenuFunc(res, getMenuById)
+  // jsonWrite(res, menu)
+})
+
+// 获取用户列表
+router.use('/list', (req, res) => {
+  let sql = $sql.user.userList
+  let params = req.query
+  handleSqlFunc(sql, [`%${params.name}%`, `%${params.tel}%`, `%${params.email}%`, `%${params.gender}%`, `%${params.status}%`, parseInt(params.page) - 1, parseInt(params.rows)], (err, ret, fields) => {
+    if (err) {
+      throw err
+    } else {
+      jsonWrite(res, ret)
+    }
+  })
   // jsonWrite(res, menu)
 })
 

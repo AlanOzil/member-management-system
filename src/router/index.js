@@ -37,6 +37,14 @@ let router = new Router({
       meta: {
         isTab: true
       }
+    }, {
+      path: 'config/user',
+      component: resolve => require(['@/views/base/user/user'], resolve),
+      name: 'user',
+      desc: '用户管理',
+      meta: {
+        isTab: true
+      }
     }]
   }, {
     path: '/',

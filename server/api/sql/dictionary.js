@@ -11,7 +11,8 @@ var sqlMap = {
     total: 'select count(*) as total from sys_dictionaryitems where status = 1 and dictionary_id=?',
     add: 'insert into sys_dictionaryitems (item_id, code, text, description, status, dictionary_id, seq, created_time, created_by, is_deleted) values (?,?,?,?,?,?,?,?,?,?)',
     update: `update sys_dictionaryitems set code = ?, text=?, description=?, seq=?, updated_time = ?, updated_by = ? where item_id = ?`,
-    del: 'update sys_dictionaryitems set is_deleted = 1, updated_time = ?, updated_by = ? where item_id = ?'
+    del: 'update sys_dictionaryitems set is_deleted = 1, updated_time = ?, updated_by = ? where item_id = ?',
+    getItemsByCode: 'select b.code, b.text from sys_dictionaries a left join sys_dictionaryitems b on a.dic_id = b.dictionary_id where a.is_deleted=0 and b.is_deleted=0 and a.code=? order by b.seq asc'
   }
 }
 module.exports = sqlMap;
