@@ -77,9 +77,25 @@ router.use('/saveDictionariesInfo', (req, res) => {
   }
 })
 
-// deleteDictionaryItem
+// delete
 router.use('/delete', (req, res) => {
   let sql = $sql.dic.del
+  let params = req.query
+  let token = req.headers.token
+  redis.get(token, (err, red) => {
+    handleSqlFunc(sql, [new Date(), red.id, params.id], (err, ret, fields) => {
+      if (err) {
+        throw err
+      } else {
+        jsonWrite(res, true)
+      }
+    })
+  })
+})
+
+// deleteDictionaryItem
+router.use('/deleteDictionaryItem', (req, res) => {
+  let sql = $sql.dicItem.del
   let params = req.query
   let token = req.headers.token
   redis.get(token, (err, red) => {

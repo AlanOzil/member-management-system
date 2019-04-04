@@ -4,7 +4,7 @@ const router = express.Router()
 const mysql = require('mysql')
 const $sql = require('./sql/user')
 const nanoid = require('nanoid')
-const crypto = require('crypto')
+// const crypto = require('crypto')
 const redis = require('../redis')
 const {
   handleSqlFunc,
@@ -97,7 +97,7 @@ router.use('/login', (req, res) => {
   let params = req.body
   // let password = crypto.createHash('md5').update(params.password).digest('hex')
   let token = nanoid()
-  pool.query(login, [params.tel, params.password], (err, result, fields) => {
+  pool.query(login, [params.keyword, params.keyword, params.password], (err, result, fields) => {
     if (err) {
       throw err
     } else if (result.length === 1) {
@@ -123,7 +123,7 @@ router.use('/login', (req, res) => {
       })
     } else if (result.length > 1) {
       throw '用户账号重复'
-    } else if (result.length === 0){
+    } else if (result.length === 0) {
       res.json({
         success: false,
         message: '用户名或密码错误',
@@ -154,4 +154,81 @@ router.use('/list', (req, res) => {
   // jsonWrite(res, menu)
 })
 
+// 获取用户详情
+router.use('/info', (req, res) => {
+  let sql = $sql.user.info
+  let params = req.query
+  handleSqlFunc(sql, [params.id], (err, ret, fields) => {
+    if (err) {
+      throw err
+    } else {
+      jsonWrite(res, ret)
+    }
+  })
+  // jsonWrite(res, menu)
+})
+
+// 更新用户状态
+router.use('/setStatus', (req, res) => {
+  let sql = $sql.user.updateStatus
+  let params = req.body
+  let token = req.headers.token
+  redis.get(token, (err, red) => {
+    red = JSON.parse(red)
+    handleSqlFunc(sql, [params.status, red.id, new Date(), params.id ], (err, ret, fields) => {
+      if (err) {
+        throw err
+      } else {
+        jsonWrite(res, true)
+      }
+    })
+  })
+  // jsonWrite(res, menu)
+})
+
+// 删除用户
+router.use('/delete', (req, res) => {
+  let sql = $sql.user.delete
+  let params = req.body
+  let token = req.headers.token
+  redis.get(token, (err, red) => {
+    red = JSON.parse(red)
+    handleSqlFunc(sql, [red.id, new Date(), params.id], (err, ret, fields) => {
+      if (err) {
+        throw err
+      } else {
+        jsonWrite(res, true)
+      }
+    })
+  })
+  // jsonWrite(res, menu)
+})
+
+// 新增或编辑
+router.use('/save', (req, res) => {
+  let params = req.body
+  let sql = params.id ? $sql.user.update : $sql.user.add
+  let token = req.headers.token
+  redis.get(token, (err, red) => {
+    red = JSON.parse(red)
+    if (params.id) {
+      handleSqlFunc(sql, [params.name, params.gender, params.tel, params.email, params.status, red.id, new Date(), params.id], (err, ret, fields) => {
+        if (err) {
+          throw err
+        } else {
+          jsonWrite(res, true)
+        }
+      })
+    } else {
+      handleSqlFunc(sql, [nanoid(), params.name, '123', params.gender, params.tel, params.email, params.status, 0, red.id, new Date()], (err, ret, fields) => {
+        if (err) {
+          throw err
+        } else {
+          jsonWrite(res, true)
+        }
+      })
+    }
+  })
+  // jsonWrite(res, menu)
+})
 module.exports = router
